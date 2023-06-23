@@ -41,6 +41,12 @@ import { eAnimationType } from "./renderables/sprite_animate_renderable.js";
 import GameObject from "./game_objects/game_object.js";
 import GameObjectSet from "./game_objects/game_object_set.js";
 
+// Prefabs
+import Mesh from "./prefabs/mesh.js";
+
+// Physics
+import Physics from "./physics/physics.js";
+
 // local to this file only
 import * as glSys from "./core/gl.js";
 import * as vertexBuffer from "./core/vertex_buffer.js";
@@ -89,6 +95,12 @@ export default {
 
     // Game Objects
     GameObject, GameObjectSet,
+
+    // Prefabs
+    Mesh,
+
+    // Physics
+    Physics,
 
     // constants
     eTexCoordArrayIndex, eAnimationType, eBoundCollideStatus,
