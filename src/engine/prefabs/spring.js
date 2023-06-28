@@ -18,3 +18,5 @@ class Spring{
         
     }
 }
+
+export default Spring;
