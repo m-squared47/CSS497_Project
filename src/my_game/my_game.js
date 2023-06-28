@@ -31,7 +31,7 @@ class MyGame extends engine.Scene {
         );
         this.mCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
         // sets the background to gray
-        this.mMesh = new engine.Mesh(50, 50, 50, 25, 5, this.mCamera);
+        this.mMesh = new engine.Mesh(50, 50, 100, 50, 2);
     }
 
     // This is the draw function, make sure to setup proper drawing environment, and more

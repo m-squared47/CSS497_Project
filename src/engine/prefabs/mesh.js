@@ -14,31 +14,27 @@ class Mesh extends GameObjectSet{
         this.w = w;     // width
         this.h = h;     // height
         this.l = l;     // node spacing
-        this.mCamera = cam;
+        this.mRenderset2 = null;
         this.generate();
     }
 
     // TO DO: Create a sufficient 2D array
     generateNodes(x, y) {
-        console.log("entering");
-        let node = null;
-        for (let i = 0; i < (this.w / this.l); i++) {
-            console.log("Column " + i);
+        for (let i = 0; i < this.w / this.l; i++) {
+            var renderset2 = new GameObjectSet();
 
             for (let j = 0; j < this.h / this.l; j++) {
-                console.log("Row " + j);
+                var ren = new Renderable();
+                ren.getXform().setPosition(x + (this.l * i), y + (this.l * j));
+                ren.getXform().setSize(0.75, 0.75);
+                ren.setColor([0, 0, 0, 1]);
 
-                this.mRenderable = new Renderable();
-                this.mRenderXform = this.mRenderable.getXform();
-                this.mRenderXform.setPosition(x + (this.l * i), y + (this.l * j));
-                this.mRenderXform.setSize(5, 5);
-                this.mRenderable.setColor([0, 0, 0, 1]);
-
-                node = new Node(this.mRenderable);
-                this.addToSet(node);
+                var node = new Node(ren);
+                renderset2.addToSet(node);
             }
+
+            this.addToSet(renderset2);
         }
-        console.log("exiting");
     }
 
     generateSprings() {
@@ -46,27 +42,12 @@ class Mesh extends GameObjectSet{
     }
 
     generate() {
-        // DEBUG: Show Midpoint
-        this.mid = new Renderable(this.x, this.y);
+        var widthFromMid = this.w / 2;
+        var heightFromMid = this.h / 2;
+        var startX = this.x - widthFromMid;
+        var startY = this.y - heightFromMid;
 
-        // determine the lowest x and y values for the starting node
-        this.widthFromMid = this.w / 2;
-        this.heightFromMid = this.h / 2;
-        this.startingX = this.x - this.widthFromMid;
-        this.startingY = this.y - this.heightFromMid;
-
-        // 2D array to hold arrays of nodes
-        console.log("Generating Nodes");
-        this.generateNodes(this.startingX, this.startingY);
-        console.log("Total Nodes: " + this.mSet.length);
-
-        console.log("Generating Strings");
-
-        this.addToSet(this.mid);
-    }
-
-    draw(camera) {
-        
+        this.generateNodes(startX, startY);
     }
 
     update() {
