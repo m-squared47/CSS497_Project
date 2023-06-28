@@ -1,27 +1,37 @@
 "use strict";
 
-import Transform from "../transform.js";
 import GameObject from "../game_objects/game_object.js";
-import Renderable from "../renderables/renderable.js";
-// import physics
+import Physics from "../physics/physics.js";
 
 // extend game_object
 class Node extends GameObject {
 
     constructor(renderable) {
+
+        // GameObject and Renderable
         super(renderable);
         this.mRenderable = renderable;
-        this.velocity = vec2.fromValues(0.0, 0.0);
-        this.drag = 0.1;
-        this.mass = 1.0;
-        this.pinned = false;
         this.setVisibility(true);
+
+        // timing variables
+        this.mTime = performance.now();
+        this.mPrevtime = this.mTime;
+        this.dTime = null;
+
+        // physics parameters
+        let velocity = vec2.fromValues(0.0, 0.0);
+        let drag = 0.1;
+        let mass = 1.0;
+        this.pinned = false;
+        
+        // Physics
+        this.mPhysics = new Physics(this.getPosition, velocity, drag, mass);
     }
 
-    updateMass(x)           {   this.mass = x; }
-    updateDrag(d)           {   this.drag = d; }
+    updateMass(x)           {   this.mPhysics.updateMass(x); }
+    updateDrag(d)           {   this.mPhysics.updateDrag(d); }
     setPin(state)           {   this.pinned = state; }
-    updatePosition(x, y)    {   this.getXform.setPosition(x, y); }
+    updatePosition(pos)    {   this.getXform.setPosition(pos); }
 
     getPosition()   {   return this.getXform.getPosition(); }
     getRenderable() {   return this.renderable; }
@@ -31,7 +41,14 @@ class Node extends GameObject {
     isPinned()      {   return this.pinned; }
 
     update() {
-        
+        this.mPrevTime = this.mTime;
+        this.mTime = performance.now();
+        this.dTime = this.mTime - this.mPrevTime;
+        console.log(this.dTime);
+
+        // refresh current position for verlet integration
+        this.mPhysics.verlet(this.dTime);
+        this.getXform().setPosition(this.mPhysics.getPosition());
     }
 
 }

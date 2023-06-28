@@ -51,7 +51,15 @@ class Mesh extends GameObjectSet{
     }
 
     update() {
+        for (let i = 0; i < this.mSet.length; i++) {
+            console.log("Update Node Col");
+            let nodeCol = this.getObjectAt(i);
 
+            for (let j = 0; j < nodeCol.size(); j++) {
+                console.log("Update node");
+                nodeCol.getObjectAt(j).update();
+            }
+        }
     }
 
 }
