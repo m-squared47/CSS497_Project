@@ -43,8 +43,8 @@ import GameObjectSet from "./game_objects/game_object_set.js";
 
 // Prefabs
 import Mesh from "./prefabs/mesh.js";
-import Node from "./prefabs/Node.js";
-import Spring from "./prefabs/Spring.js";
+import Node from "./prefabs/node.js";
+import Spring from "./prefabs/spring.js";
 
 // Physics
 import Physics from "./physics/physics.js";

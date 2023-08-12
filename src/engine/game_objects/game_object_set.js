@@ -13,6 +13,8 @@ class GameObjectSet {
 
     size() { return this.mSet.length; }
 
+    clear() { this.mSet = []; }
+
     getObjectAt(index) {
         return this.mSet[index];
     }

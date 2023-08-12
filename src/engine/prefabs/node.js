@@ -19,13 +19,13 @@ class Node extends GameObject {
         this.dTime = null;
 
         // physics parameters
-        let velocity = vec2.fromValues(0.0, 0.0);
+        let velocity = vec2.fromValues(1.0, -1.0);
         let drag = 0.1;
         let mass = 1.0;
         this.pinned = false;
         
         // Physics
-        this.mPhysics = new Physics(this.getPosition, velocity, drag, mass);
+        this.mPhysics = new Physics(this.getXform().getPosition(), velocity, drag, mass);
     }
 
     updateMass(x)           {   this.mPhysics.updateMass(x); }
@@ -33,7 +33,7 @@ class Node extends GameObject {
     setPin(state)           {   this.pinned = state; }
     updatePosition(pos)    {   this.getXform.setPosition(pos); }
 
-    getPosition()   {   return this.getXform.getPosition(); }
+    getPosition()   {   return this.mRenderable.getXform().getPosition(); }
     getRenderable() {   return this.renderable; }
     getVelocity()   {   return this.velocity; }
     getDrag()       {   return this.drag; }
@@ -41,14 +41,26 @@ class Node extends GameObject {
     isPinned()      {   return this.pinned; }
 
     update() {
+        console.log("UPDATE NODE");
+        
         this.mPrevTime = this.mTime;
         this.mTime = performance.now();
         this.dTime = this.mTime - this.mPrevTime;
-        console.log(this.dTime);
 
-        // refresh current position for verlet integration
-        this.mPhysics.verlet(this.dTime);
-        this.getXform().setPosition(this.mPhysics.getPosition());
+        if (!this.pinned) {
+            // refresh current position for verlet integration
+            this.mPhysics.verlet(this.dTime);
+            let updatePos = this.mPhysics.getPosition();
+
+            // check window collision
+            if (updatePos.at(1) <= 0) {
+                updatePos = vec2.fromValues(updatePos.at(0), 0);
+            }
+
+            // check spring tension
+
+            this.getXform().setPosition(updatePos.at(0), updatePos.at(1));
+        }
     }
 
 }
