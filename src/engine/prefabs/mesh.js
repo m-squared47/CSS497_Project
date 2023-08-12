@@ -29,7 +29,7 @@ class Mesh extends GameObjectSet{
 
     // TO DO: Create a sufficient 2D array
     generateNodes(x, y) {
-        this.mNodeArray = [new GameObjectSet()];
+        this.mNodeArray = new GameObjectSet();
 
         for (let i = 0; i < this.w / this.l; i++) {
             var nodeCol = new GameObjectSet();
@@ -131,7 +131,6 @@ class Mesh extends GameObjectSet{
         // TODO: Create a more efficient storage system for nodes for efficient
         //          traversal and neighbor assignments
 
-        console.log("Update Mesh");
         for (let i = 0; i < this.mSet.length; i++) {
             this.getObjectAt(i).update;
         }
