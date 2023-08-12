@@ -41,8 +41,7 @@ class Node extends GameObject {
     isPinned()      {   return this.pinned; }
 
     update() {
-        console.log("UPDATE NODE");
-        
+
         this.mPrevTime = this.mTime;
         this.mTime = performance.now();
         this.dTime = this.mTime - this.mPrevTime;

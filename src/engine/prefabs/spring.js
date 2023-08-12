@@ -9,6 +9,7 @@ class Spring{
         this.mPos2 = this.mNode2.getPosition();
         this.mWeight = w;   // Weight of spring (thickness)
         this.mRen = ren;    // Renderable
+        this.xForm = this.mRen.getXform();
         this.init();
     }
 
@@ -17,44 +18,40 @@ class Spring{
         this.mRen.setColor([1.0, 1.0, 1.0, 1.0]);
 
         // hook the renderable to both nodes
-        let xForm = this.mRen.getXform();
 
         // set the angle
-        let angle = 0;
-
-        if (this.mPos1.at(0) == this.mPos2.at(0))
-            angle = 0;
-        else if (this.mPos1.at(1) == this.mPos2.at(1))
-            angle = Math.PI / 2;
-        else
-            angle = this.vectorsToAngle();
-
-        xForm.setRotationInRad(angle);
-        console.log("Angle = " + angle);
-
-        // get the length
-        let distance = this.getDistance();
+        this.setAngle();
 
         // transform
-        xForm.setSize(this.mWeight / 4, distance);
+        this.setTransform();
 
         // set position
+        this.setPosition();
+    }
+
+    setTransform() {
+        this.xForm.setSize(this.mWeight / 4, this.getDistance());
+    }
+
+    setPosition() {
         let midX = (this.mPos1.at(0) + this.mPos2.at(0)) / 2;
         let midY = (this.mPos1.at(1) + this.mPos2.at(1)) / 2;
-        xForm.setPosition(midX, midY);
+        this.xForm.setPosition(midX, midY);
+    }
+
+    setAngle() {
+        this.xForm.setRotationInRad(this.vectorsToAngle());
     }
 
     // Gets the angle between node1 and node2
     // @returns an angle in degrees
     vectorsToAngle() {
-        let a = vec2.fromValues(0, 0);
-        let b = vec2.fromValues(Math.abs(this.mPos1.at(0) - this.mPos2.at(0)), Math.abs(this.mPos1.at(1) - this.mPos2.at(1)));
-        let ab = (a.at(0) * b.at(0)) + (a.at(1) * b.at(1));
-        let magA = Math.sqrt(Math.pow(a.at(0), 2) + Math.pow(a.at(1), 2));
-        let magB = Math.sqrt(Math.pow(b.at(0), 2) + Math.pow(b.at(1), 2));
+        let x1 = this.mPos1.at(0);
+        let y1 = this.mPos1.at(1);
+        let x2 = this.mPos2.at(0);
+        let y2 = this.mPos2.at(1);
 
-        let cos_theta = ab / (magA * magB);
-        return Math.acos(cos_theta);
+        return (Math.PI / 2) + Math.atan2(y2 - y1, x2 - x1);
     }
 
     // Get the distance between node1 and node2
@@ -65,6 +62,7 @@ class Spring{
         return Math.sqrt(distSq);
     }
 
+    // Setters
     updateElasticity(x) {}
 
     updateWeight(w) {}
@@ -85,8 +83,13 @@ class Spring{
         this.mPos2 = this.mNode2.getPosition();
     }
 
+    // Getters
     getNode1() { return this.mNode1; }
     getNode2() { return this.mNode2; }
+
+    checkConstraint() {
+
+    }
 
     draw(camera) {
         this.mNode1.draw(camera);
@@ -95,12 +98,18 @@ class Spring{
     }
 
     update() {
-        console.log("Update Spring");
         this.mNode1.update();
         this.mNode2.update();
 
         this.mPos1 = this.mNode1.getPosition();
         this.mPos2 = this.mNode2.getPosition();
+
+        //change properties according to node position
+        this.setAngle();
+        this.setPosition();
+        this.setTransform();
+
+        this.checkConstraint();
     }
 }
 

@@ -69,7 +69,7 @@ class Mesh extends GameObjectSet{
             let nextNodeCol = null;
 
             if (i + 1 < this.h / this.l) {
-             nextNodeCol = this.mNodeArray.getObjectAt(i + 1);
+                nextNodeCol = this.mNodeArray.getObjectAt(i + 1);
             }
 
             for (let j = 0; (j + 1) <= nodeCol.size(); j++) {
@@ -130,9 +130,9 @@ class Mesh extends GameObjectSet{
     update() {
         // TODO: Create a more efficient storage system for nodes for efficient
         //          traversal and neighbor assignments
-
+        
         for (let i = 0; i < this.mSet.length; i++) {
-            this.getObjectAt(i).update;
+            this.getObjectAt(i).update();
         }
 
         this.mTime = performance.now();

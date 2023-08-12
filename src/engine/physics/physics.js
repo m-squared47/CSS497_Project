@@ -7,7 +7,7 @@ class Physics{
         this.prevPos = this.currentPos;
         this.velocity = vec2.fromValues(vel.at(0), vel.at(1));
         this.prevVelocity = this.velocity;
-        this.gravity = new vec2.fromValues(0, 0.00002);
+        this.gravity = new vec2.fromValues(0, 0.000002);
         this.drag = drag;
         this.mass = mass;
     }
