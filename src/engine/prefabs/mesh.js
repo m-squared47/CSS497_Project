@@ -37,16 +37,16 @@ class Mesh extends GameObjectSet{
             for (let j = 0; j < this.h / this.l; j++) {
                 var ren = new Renderable();
                 ren.getXform().setPosition(x + (this.l * i), y + (this.l * j));
-                ren.getXform().setSize(0.75, 0.75);
+                ren.getXform().setSize(0.5, 0.5);
                 ren.setColor([0, 0, 0, 1]);
 
                 var node = new Node(ren);
 
                 // TEMP: Remove when more functionality allows
                 // pin nodes (top left and top right)
-                if ((i == 0 & j + 1 == this.h / this.l) || (i + 1 == this.w / this.l & j + 1 == this.h / this.l)) {
-                   node.setPin(true);
-                }
+                //if ( (i == 0 || i == this.w / this.l - 1)&& j == (this.h / this.l) - 1) {
+                //   node.setPin(true);
+                //}
 
                 // TEMP: Pin all nodes
                 //node.setPin(true);
@@ -62,7 +62,7 @@ class Mesh extends GameObjectSet{
         // Array for spring objects
         this.springArray = new GameObjectSet();
 
-        for (let i = 0; (i + 1) <= this.h / this.l; i++) {
+        for (let i = 0; (i + 1) <= this.w / this.l; i++) {
 
             let nodeCol = this.mNodeArray.getObjectAt(i);
 
@@ -92,7 +92,7 @@ class Mesh extends GameObjectSet{
 
                 //console.log("Spring 1: " + i + " , " + j);
                 if (neighbor1 != null) {
-                    var spring1 = new Spring(currNode, neighbor1, this.s, ren);
+                    var spring1 = new Spring(currNode, neighbor1, this.s, ren, false);
                     this.springArray.addToSet(spring1);
                 }
 
@@ -102,7 +102,7 @@ class Mesh extends GameObjectSet{
 
                 //console.log("Spring 2: " + i + " , " + j);
                 if (neighbor2 != null) {
-                    var spring2 = new Spring(currNode, neighbor2, this.s, ren);
+                    var spring2 = new Spring(currNode, neighbor2, this.s, ren, true);
                     this.springArray.addToSet(spring2);
                 }
             }
@@ -127,6 +127,12 @@ class Mesh extends GameObjectSet{
         this.generateSprings();
     }
 
+    togglePinNode(x, y) {
+        var nodeCol = this.mNodeArray.getObjectAt(x);
+        var node = nodeCol.getObjectAt(y);
+        node.setPin(!node.isPinned());
+    }
+
     update() {
         // TODO: Create a more efficient storage system for nodes for efficient
         //          traversal and neighbor assignments
@@ -136,7 +142,7 @@ class Mesh extends GameObjectSet{
         }
 
         this.mTime = performance.now();
-        //console.log(this.mTime - this.mPrevTime);
+        //console.log((this.mTime - this.mPrevTime));
         this.mPrevTime = this.mTime;
     }
 

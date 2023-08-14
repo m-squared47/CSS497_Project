@@ -27,11 +27,14 @@ class MyGame extends engine.Scene {
         this.mCamera = new engine.Camera(
             vec2.fromValues(50, 37.5),   // position of the camera
             100,                       // width of camera
-            [0, 0, 640, 480]           // viewport (orgX, orgY, width, height)
+            [0, 0, 1280, 960]           // viewport (orgX, orgY, width, height)
         );
         this.mCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
         // sets the background to gray
-        this.mMesh = new engine.Mesh(50, 50, 50, 50, 10, 1);
+        this.mMesh = new engine.Mesh(50, 50, 50, 50, 2, 0.5);
+        this.mMesh.togglePinNode(0, 24);
+        this.mMesh.togglePinNode(12, 24);
+        this.mMesh.togglePinNode(24, 24);
     }
 
     // This is the draw function, make sure to setup proper drawing environment, and more
