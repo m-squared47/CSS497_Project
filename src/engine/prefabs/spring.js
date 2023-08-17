@@ -21,6 +21,8 @@ class Spring{
         this.mRen = ren;    // Renderable
         this.xForm = this.mRen.getXform();
         this.mDouble = double;
+        this.mCurTime = performance.now();
+        this.mPrevTime = this.mCurTime;
         this.init();
     }
 
@@ -101,6 +103,10 @@ class Spring{
 
     // check if the spring should extend
     checkConstraint() {
+        // time
+
+        var timeElapsed = (this.mCurTime - this.mPrevTime) / 1000;
+
         let diffX = this.mPos1.at(0) - this.mPos2.at(0);
         let diffY = this.mPos1.at(1) - this.mPos2.at(1);
         let diffLength = Math.sqrt(diffX * diffX + diffY * diffY);
@@ -116,15 +122,27 @@ class Spring{
             // Update the position of Node 1
             this.mNode1.updatePosition(this.mPos1);
 
+            // update velocity
+            var n1Grav = this.mNode1.getGravity();
+            var n1Acc = vec2.fromValues(offset[0] * timeElapsed * timeElapsed, offset[1] * timeElapsed * timeElapsed);
+            var updateGrav = vec2.create();
+            vec2.add(updateGrav, n1Grav, n1Acc);
+            this.mNode1.updateGravity(updateGrav);
         }
 
         if (!this.mNode2.isPinned()) {
-            // Calculate the new position of Node 1
+            // Calculate the new position of Node 2
             this.mPos2[0] -= offset[0];
             this.mPos2[1] -= offset[1];
             
-            // Update the position of Node 1
+            // Update the position of Node 2
             this.mNode2.updatePosition(this.mPos2);
+
+            var n2Grav = this.mNode2.getGravity();
+            var n2Acc = vec2.fromValues(offset[0] * timeElapsed * timeElapsed, offset[1] * timeElapsed * timeElapsed);
+            var updateGrav = vec2.create();
+            vec2.subtract(updateGrav, n2Grav, n2Acc);
+            this.mNode2.updateGravity(updateGrav);
 
         }
     }
@@ -137,22 +155,29 @@ class Spring{
     }
 
     update() {
-        this.checkConstraint();
+        this.mCurTime = performance.now();
         
         // update nodes
-        if (!this.mDouble) {
+        if (this.mDouble) {
             this.mNode1.update();
             this.mNode2.update();
             this.mPos1 = this.mNode1.getPosition();
             this.mPos2 = this.mNode2.getPosition();
+            this.mDouble = !this.mDouble;
             //console.log("Double")
+        }
+        else {
+            this.checkConstraint();
+            this.mDouble = !this.mDouble;
         }
 
         //change spring properties according to node positions
+        
         this.setAngle();
         this.setPosition();
         this.setTransform();
 
+        this.mPrevTime = this.mCurTime;
     }
 }
 

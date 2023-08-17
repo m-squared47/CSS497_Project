@@ -63,8 +63,11 @@ class Mesh extends GameObjectSet{
         this.springArray = new GameObjectSet();
 
         for (let i = 0; (i + 1) <= this.w / this.l; i++) {
-
+            let prevNodeCol = null;
             let nodeCol = this.mNodeArray.getObjectAt(i);
+
+            if (i != 0)
+            prevNodeCol = this.mNodeArray.getObjectAt(i - 1);
 
             let nextNodeCol = null;
 
@@ -79,7 +82,7 @@ class Mesh extends GameObjectSet{
 
                 // get neighboring nodes
                 // to avoid duplicate objects, only allow creation of
-                // 1-2 springs at a time
+                // 1-2 new springs at a time
                 let neighbor1 = null;
                 if (nextNodeCol != null)
                     neighbor1 = nextNodeCol.getObjectAt(j);
@@ -105,6 +108,7 @@ class Mesh extends GameObjectSet{
                     var spring2 = new Spring(currNode, neighbor2, this.s, ren, true);
                     this.springArray.addToSet(spring2);
                 }
+
             }
         }
 
@@ -136,9 +140,14 @@ class Mesh extends GameObjectSet{
     update() {
         // TODO: Create a more efficient storage system for nodes for efficient
         //          traversal and neighbor assignments
-        
+        //this.generateSprings();
+
         for (let i = 0; i < this.mSet.length; i++) {
             this.getObjectAt(i).update();
+        }
+
+        for (let j = this.mSet.length - 1; j != 0; j--) {
+            this.getObjectAt(j).update();
         }
 
         this.mTime = performance.now();

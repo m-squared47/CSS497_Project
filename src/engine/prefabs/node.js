@@ -35,6 +35,7 @@ class Node extends GameObject {
     updateDrag(d)           {   this.mPhysics.updateDrag(d); }
     updateVelocity(v)       {   this.mPhysics.updateVelocity(v); }
     updateGravCoefficient(g){   this.mPhysics.setGravCoefficient(g); }
+    updateGravity(grav)     {   this.mPhysics.setGravity(grav); }
     setPin(state)           {   this.pinned = state; }
     updatePosition(pos)     {   this.getXform().setPosition(pos.at(0), pos.at(1)); }
     incXPos(dX)             {   this.getXform().incXPosBy(dX); }
