@@ -3,7 +3,7 @@
 import GameObject from "../engine/game_objects/game_object.js";
 import engine from "../engine/index.js";
 import Renderable from "../engine/renderables/renderable.js";
-import StartScene from "./my_game.js";
+import ManyMesh from "./many_mesh.js";
 
 
 class CollideScene extends engine.Scene {
@@ -34,16 +34,16 @@ class CollideScene extends engine.Scene {
             100,                       // width of camera
             [0, 0, 1280, 960]           // viewport (orgX, orgY, width, height)
         );
-        this.mCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
+        this.mCamera.setBackgroundColor([0.3, 0.3, 0.3, 1]);
         // sets the background to gray
-        this.mMesh = new engine.Mesh(50, 50, 50, 50, 2, 0.5, 0);
+        this.mMesh = new engine.Mesh(50, 50, 50, 50, 2, 1, 0);
         this.mMesh.togglePinNode(0, 24);
         this.mMesh.togglePinNode(12, 24);
         this.mMesh.togglePinNode(24, 24);
 
         let CollidableRen = new Renderable();
         CollidableRen.getXform().setSize(15, 15);
-        CollidableRen.getXform().setPosition(40, 15);
+        CollidableRen.getXform().setPosition(70, 15);
         CollidableRen.setColor([255, 0, 0, 255]);
         this.mCollidableUp = new GameObject(CollidableRen);
         this.mCollidableUp.setSpeed(0.01);
@@ -91,7 +91,7 @@ class CollideScene extends engine.Scene {
     next() {
         super.next();
 
-        let nextScene = new StartScene();
+        let nextScene = new ManyMesh();
         nextScene.start();
     }
         
@@ -100,7 +100,7 @@ class CollideScene extends engine.Scene {
 window.onload = function () {
     engine.init("GLCanvas");
 
-    let myGame = new Collide_scene();
+    let myGame = new CollideScene();
     myGame.start();
 }
 

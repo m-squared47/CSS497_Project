@@ -128,7 +128,7 @@ class Spring{
             var n1Acc = vec2.fromValues(offset[0] * timeElapsed * timeElapsed, 
                                         offset[1] * timeElapsed * timeElapsed);
             var n1AccScaled = vec2.create();
-            vec2.multiply(n1AccScaled, n1Acc, vec2.fromValues(0.5, 0.5));
+            vec2.multiply(n1AccScaled, n1Acc, vec2.fromValues(1, 1));
             var updateGrav = vec2.create();
             vec2.add(updateGrav, n1Grav, n1AccScaled);
             this.mNode1.updateGravity(updateGrav);
@@ -147,7 +147,7 @@ class Spring{
             var n2Acc = vec2.fromValues(offset[0] * timeElapsed * timeElapsed, 
                                         offset[1] * timeElapsed * timeElapsed);
             var n2AccScaled = vec2.create();
-            vec2.multiply(n2AccScaled, n2Acc, vec2.fromValues(0.5, 0.5));
+            vec2.multiply(n2AccScaled, n2Acc, vec2.fromValues(1, 1));
             var updateGrav = vec2.create();
             vec2.subtract(updateGrav, n2Grav, n2AccScaled);
             this.mNode2.updateGravity(updateGrav);
@@ -164,37 +164,30 @@ class Spring{
     }
 
     update() {
-        this.mCurTime = performance.now();
 
+        //move nodes if they move too far
+        this.mCurTime = performance.now();
         this.checkConstraint();
-        
+        this.mPrevTime = this.mCurTime;
+
         // update nodes
         if (this.mDouble) {
-            //this.checkConstraint();
             this.mNode1.update();
-            this.mNode2.update();
-            this.mPos1 = this.mNode1.getPosition();
             this.mPos2 = this.mNode2.getPosition();
-            
             this.mDouble = !this.mDouble;
-            //console.log("Double")
         }
         else {
-            //this.checkConstraint();
-            //this.mPos1 = this.mNode1.getPosition();
-            this.mPos2 = this.mNode2.getPosition();
+            this.mNode2.update();
+            this.mPos1 = this.mNode1.getPosition();
             this.mDouble = !this.mDouble;
         }
 
-        this.checkConstraint();
-
         //change spring properties according to node positions
-        
         this.setAngle();
         this.setPosition();
         this.setTransform();
 
-        this.mPrevTime = this.mCurTime;
+        
     }
 }
 

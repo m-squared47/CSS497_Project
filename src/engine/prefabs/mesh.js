@@ -6,6 +6,16 @@ import Renderable from "../renderables/renderable.js";
 import GameObjectSet from "../game_objects/game_object_set.js";
 class Mesh extends GameObjectSet{
 
+    /*
+    *   constructor()
+    *   @param x: Starting x Coord
+    *   @param y: Starting Y coord
+    *   @param w: Width of the mesh
+    *   @param h: Height of the mesh
+    *   @param l: Length/Spacing between nodes
+    *   @param s: Spring weight (thickness)
+    *   @param e: Spring Elasticity
+    */
     constructor(x, y, w, h, l, s, e) {
         super();
         
@@ -24,6 +34,8 @@ class Mesh extends GameObjectSet{
 
         this.generate();
 
+        this.mCurTime = performance.now();
+        this.mPrevTime = this.mCurTime;
     }
 
     // TO DO: Create a sufficient 2D array

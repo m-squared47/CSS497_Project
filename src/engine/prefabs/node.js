@@ -53,8 +53,7 @@ class Node extends GameObject {
     getMass()       {   return this.mass; }
     isPinned()      {   return this.pinned; }
 
-    update() {
-
+    checkCollision() {
         for (let i = 0; i < this.collidables.length; i++) {
             var collidable = this.collidables[i];
             if (this.getBBox().intersectsBound(collidable.getBBox())) {
@@ -73,10 +72,14 @@ class Node extends GameObject {
 
             }
         }
-
+    }
+        
+    update() {
         this.mPrevTime = this.mTime;
         this.mTime = performance.now();
         this.dTime = this.mTime - this.mPrevTime;
+
+        this.checkCollision();
 
         if (this.pinned) {
             this.currPos = this.prevPos;
@@ -90,7 +93,7 @@ class Node extends GameObject {
                 updatePos = vec2.fromValues(updatePos.at(0), 0);
             }
 
-            // check spring tension
+            // update current and previous positions
             this.prevPos = this.currPos;
             this.curPos = updatePos;
             this.getXform().setPosition(updatePos.at(0), updatePos.at(1));
