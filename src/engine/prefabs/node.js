@@ -6,12 +6,14 @@ import Physics from "../physics/physics.js";
 // extend game_object
 class Node extends GameObject {
 
-    constructor(renderable) {
+    constructor(renderable, collidables) {
 
         // GameObject and Renderable
         super(renderable);
         this.mRenderable = renderable;
         this.setVisibility(true);
+
+        this.collidables = collidables;
 
         // timing variables
         this.mTime = performance.now();
@@ -20,7 +22,7 @@ class Node extends GameObject {
 
         // physics parameters
         let velocity = vec2.fromValues(1.0, 1.0);
-        let drag = 0.47;
+        let drag = 0.7;
         let mass = 1.0;
         this.pinned = false;
 
@@ -38,8 +40,10 @@ class Node extends GameObject {
     updateGravity(grav)     {   this.mPhysics.setGravity(grav); }
     setPin(state)           {   this.pinned = state; }
     updatePosition(pos)     {   this.getXform().setPosition(pos.at(0), pos.at(1)); }
-    incXPos(dX)             {   this.getXform().incXPosBy(dX); }
-    incYPos(dY)             {   this.getXform().incYPosBy(dY); }
+    incXPos(dX)             {   this.getXform().incXPosBy(dX); 
+                                this.mPhysics.setPosition(this.getXform().getPosition()); }
+    incYPos(dY)             {   this.getXform().incYPosBy(dY); 
+                                this.mPhysics.setPosition(this.getXform().getPosition()); }
 
     getPosition()   {   return this.mRenderable.getXform().getPosition(); }
     getRenderable() {   return this.renderable; }
@@ -50,6 +54,25 @@ class Node extends GameObject {
     isPinned()      {   return this.pinned; }
 
     update() {
+
+        for (let i = 0; i < this.collidables.length; i++) {
+            var collidable = this.collidables[i];
+            if (this.getBBox().intersectsBound(collidable.getBBox())) {
+                this.mPhysics.setGravity(vec2.fromValues(0, 0));
+
+                var pushSpeed = collidable.getSpeed();
+                var pushDir = collidable.getCurrentFrontDir();
+
+                if (pushDir[0] > 0) {
+                    this.incXPos(pushSpeed);
+                } 
+
+                else if (pushDir[1] > 0) {
+                    this.incYPos(pushSpeed);
+                }
+
+            }
+        }
 
         this.mPrevTime = this.mTime;
         this.mTime = performance.now();

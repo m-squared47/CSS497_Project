@@ -3,10 +3,10 @@
 import GameObject from "../engine/game_objects/game_object.js";
 import engine from "../engine/index.js";
 import Renderable from "../engine/renderables/renderable.js";
-import CollideScene from "./collide_scene.js";
+import StartScene from "./my_game.js";
 
 
-class StartScene extends engine.Scene {
+class CollideScene extends engine.Scene {
     constructor() {
         super();
         // The camera to view the scene
@@ -40,6 +40,24 @@ class StartScene extends engine.Scene {
         this.mMesh.togglePinNode(0, 24);
         this.mMesh.togglePinNode(12, 24);
         this.mMesh.togglePinNode(24, 24);
+
+        let CollidableRen = new Renderable();
+        CollidableRen.getXform().setSize(15, 15);
+        CollidableRen.getXform().setPosition(40, 15);
+        CollidableRen.setColor([255, 0, 0, 255]);
+        this.mCollidableUp = new GameObject(CollidableRen);
+        this.mCollidableUp.setSpeed(0.01);
+
+        CollidableRen = new Renderable();
+        CollidableRen.getXform().setSize(15, 15);
+        CollidableRen.getXform().setPosition(10, 50);
+        CollidableRen.setColor([255, 0, 0, 255]);
+        this.mCollidableLeft = new GameObject(CollidableRen);
+        this.mCollidableLeft.setSpeed(0.01);
+        
+
+        this.mMesh.addCollision(this.mCollidableUp);
+        this.mMesh.addCollision(this.mCollidableLeft);
     }
 
     // This is the draw function, make sure to setup proper drawing environment, and more
@@ -52,23 +70,28 @@ class StartScene extends engine.Scene {
         this.mCamera.setViewAndCameraMatrix();
 
         this.mMesh.draw(this.mCamera);
+
+        this.mCollidableUp.draw(this.mCamera);
+        this.mCollidableLeft.draw(this.mCamera);
     }
 
     // The update function, updates the application state. Make sure to _NOT_ draw
     // anything from this function!
     update() {
-        // key input
         if (engine.input.isKeyClicked(engine.input.keys.A)) {
             this.next();
         }
 
+        this.mCollidableLeft.rotateObjPointTo(vec2.fromValues(50, 50), 5);
+        this.mCollidableUp.update();
+        this.mCollidableLeft.update();
         this.mMesh.update();
     }
 
     next() {
         super.next();
 
-        let nextScene = new CollideScene();
+        let nextScene = new StartScene();
         nextScene.start();
     }
         
@@ -77,8 +100,8 @@ class StartScene extends engine.Scene {
 window.onload = function () {
     engine.init("GLCanvas");
 
-    let myGame = new StartScene();
+    let myGame = new Collide_scene();
     myGame.start();
 }
 
-export default StartScene;
+export default CollideScene;

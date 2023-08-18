@@ -7,7 +7,7 @@ class Physics{
         this.prevPos = this.currentPos;
         this.velocity = vec2.fromValues(vel.at(0), vel.at(1));
         this.prevVelocity = this.velocity;
-        this.gravity = new vec2.fromValues(0, -0.0001);
+        this.gravity = new vec2.fromValues(0, -0.000098);
         this.gravityCoefficient = 1;
         this.drag = drag;
         this.mass = mass;
@@ -24,8 +24,12 @@ class Physics{
 
     verlet(dT) {
         let acc = this.acceleration();
-        let newX = this.currentPos.at(0) + (this.currentPos.at(0) - this.prevPos.at(0)) * (1 - this.drag) + acc.at(0) * (1 - this.drag) * (dT * dT);
-        let newY = this.currentPos.at(1) + (this.currentPos.at(1) - this.prevPos.at(1)) * (1 - this.drag) + acc.at(1) * (1 - this.drag) * (dT * dT); 
+        let newX = this.currentPos.at(0) + 
+                    (this.currentPos.at(0) - this.prevPos.at(0)) * (1 - this.drag) + 
+                    acc.at(0) * (1 - this.drag) * (dT * dT);
+        let newY = this.currentPos.at(1) + 
+                    (this.currentPos.at(1) - this.prevPos.at(1)) * (1 - this.drag) + 
+                    acc.at(1) * (1 - this.drag) * (dT * dT); 
 
         let newPos = vec2.fromValues(newX, newY);
 
@@ -46,7 +50,13 @@ class Physics{
     updateDrag(d)               {   this.drag = d; }
     updateVelocity(v)           {   this.velocity = vec2.fromValues(v[0], v[1]); }
     updateGravCoefficient(g)    {   this.gravityCoefficient = g; }
-    setGravity(grav)            {   this.gravity = grav; }
+    setGravity(grav)            {   
+        if (grav[0] < -0.000098) grav[0] = -0.000098;
+        if (grav[0] > 0.000098) grav[0] = 0.000098;
+        if (grav[1] < -0.000098) grav[1] = -0.000098;
+        if (grav[1] > 0.000098) grav[1] = 0.000098;
+        this.gravity = grav; 
+    }
 
 }
 

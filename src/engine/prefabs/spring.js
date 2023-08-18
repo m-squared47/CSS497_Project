@@ -11,13 +11,14 @@ class Spring{
     * ren:    Renderable object
     * double: Boolean if spring has a doubly accessed node (default = false)
     */
-    constructor(n1, n2, w, ren, double = false) {
+    constructor(n1, n2, w, e, ren, double = false) {
         this.mNode1 = n1;   // node 1
         this.mNode2 = n2;   // Node 2
         this.mPos1 = this.mNode1.getPosition();
         this.mPos2 = this.mNode2.getPosition();
         this.mLength = null;
         this.mWeight = w;   // Weight of spring (thickness)
+        this.mElasticity = e;
         this.mRen = ren;    // Renderable
         this.xForm = this.mRen.getXform();
         this.mDouble = double;
@@ -111,7 +112,7 @@ class Spring{
         let diffY = this.mPos1.at(1) - this.mPos2.at(1);
         let diffLength = Math.sqrt(diffX * diffX + diffY * diffY);
 
-        let diffFactor = (this.mLength - diffLength) / diffLength;
+        let diffFactor = ((this.mLength + this.mElasticity) - diffLength) / diffLength;
         let offset = vec2.fromValues(diffX * diffFactor * 0.5, diffY * diffFactor * 0.5);
 
         if (!this.mNode1.isPinned()) {
@@ -124,10 +125,14 @@ class Spring{
 
             // update velocity
             var n1Grav = this.mNode1.getGravity();
-            var n1Acc = vec2.fromValues(offset[0] * timeElapsed * timeElapsed, offset[1] * timeElapsed * timeElapsed);
+            var n1Acc = vec2.fromValues(offset[0] * timeElapsed * timeElapsed, 
+                                        offset[1] * timeElapsed * timeElapsed);
+            var n1AccScaled = vec2.create();
+            vec2.multiply(n1AccScaled, n1Acc, vec2.fromValues(0.5, 0.5));
             var updateGrav = vec2.create();
-            vec2.add(updateGrav, n1Grav, n1Acc);
+            vec2.add(updateGrav, n1Grav, n1AccScaled);
             this.mNode1.updateGravity(updateGrav);
+
         }
 
         if (!this.mNode2.isPinned()) {
@@ -139,9 +144,12 @@ class Spring{
             this.mNode2.updatePosition(this.mPos2);
 
             var n2Grav = this.mNode2.getGravity();
-            var n2Acc = vec2.fromValues(offset[0] * timeElapsed * timeElapsed, offset[1] * timeElapsed * timeElapsed);
+            var n2Acc = vec2.fromValues(offset[0] * timeElapsed * timeElapsed, 
+                                        offset[1] * timeElapsed * timeElapsed);
+            var n2AccScaled = vec2.create();
+            vec2.multiply(n2AccScaled, n2Acc, vec2.fromValues(0.5, 0.5));
             var updateGrav = vec2.create();
-            vec2.subtract(updateGrav, n2Grav, n2Acc);
+            vec2.subtract(updateGrav, n2Grav, n2AccScaled);
             this.mNode2.updateGravity(updateGrav);
 
         }
@@ -149,27 +157,36 @@ class Spring{
 
 
     draw(camera) {
-        this.mNode1.draw(camera);
-        this.mNode2.draw(camera);
         this.mRen.draw(camera);
+        this.mNode1.draw(camera);
+        //this.mNode2.draw(camera);
+        
     }
 
     update() {
         this.mCurTime = performance.now();
+
+        this.checkConstraint();
         
         // update nodes
         if (this.mDouble) {
+            //this.checkConstraint();
             this.mNode1.update();
             this.mNode2.update();
             this.mPos1 = this.mNode1.getPosition();
             this.mPos2 = this.mNode2.getPosition();
+            
             this.mDouble = !this.mDouble;
             //console.log("Double")
         }
         else {
-            this.checkConstraint();
+            //this.checkConstraint();
+            //this.mPos1 = this.mNode1.getPosition();
+            this.mPos2 = this.mNode2.getPosition();
             this.mDouble = !this.mDouble;
         }
+
+        this.checkConstraint();
 
         //change spring properties according to node positions
         
