@@ -6,25 +6,36 @@ import Renderable from "../renderables/renderable.js";
 import GameObjectSet from "../game_objects/game_object_set.js";
 class Mesh extends GameObjectSet{
 
-    constructor(x, y, w, h, l, s) {
+    /*
+    *   constructor()
+    *   @param x: Starting x Coord
+    *   @param y: Starting Y coord
+    *   @param w: Width of the mesh
+    *   @param h: Height of the mesh
+    *   @param l: Length/Spacing between nodes
+    *   @param s: Spring weight (thickness)
+    *   @param e: Spring Elasticity
+    */
+    constructor(x, y, w, h, l, s, e) {
         super();
-        // these are temporary variables. Change later when fully implementing.
+        
         this.x = x;     // x coord
         this.y = y;     // y coord
         this.w = w;     // width
         this.h = h;     // height
         this.l = l;     // node spacing
         this.s = s;     // spring weight (thickness)
+        this.e = e;     // spring elasticity
         this.mNodeArray = [];
 
         this.nodeArray = [];
         this.springArray = [];
+        this.collidables = [];
 
         this.generate();
 
-        // for performance data
-        this.mTime = performance.now();
-        this.mPrevTime = this.mTime;
+        this.mCurTime = performance.now();
+        this.mPrevTime = this.mCurTime;
     }
 
     // TO DO: Create a sufficient 2D array
@@ -37,19 +48,10 @@ class Mesh extends GameObjectSet{
             for (let j = 0; j < this.h / this.l; j++) {
                 var ren = new Renderable();
                 ren.getXform().setPosition(x + (this.l * i), y + (this.l * j));
-                ren.getXform().setSize(0.75, 0.75);
+                ren.getXform().setSize(0.25, 0.25);
                 ren.setColor([0, 0, 0, 1]);
 
-                var node = new Node(ren);
-
-                // TEMP: Remove when more functionality allows
-                // pin nodes (top left and top right)
-                if ((i == 0 & j + 1 == this.h / this.l) || (i + 1 == this.w / this.l & j + 1 == this.h / this.l)) {
-                   node.setPin(true);
-                }
-
-                // TEMP: Pin all nodes
-                //node.setPin(true);
+                var node = new Node(ren, this.collidables);
 
                 nodeCol.addToSet(node);
             }
@@ -62,14 +64,13 @@ class Mesh extends GameObjectSet{
         // Array for spring objects
         this.springArray = new GameObjectSet();
 
-        for (let i = 0; (i + 1) <= this.h / this.l; i++) {
-
+        for (let i = 0; (i + 1) <= this.w / this.l; i++) {
             let nodeCol = this.mNodeArray.getObjectAt(i);
 
             let nextNodeCol = null;
 
             if (i + 1 < this.h / this.l) {
-             nextNodeCol = this.mNodeArray.getObjectAt(i + 1);
+                nextNodeCol = this.mNodeArray.getObjectAt(i + 1);
             }
 
             for (let j = 0; (j + 1) <= nodeCol.size(); j++) {
@@ -79,7 +80,7 @@ class Mesh extends GameObjectSet{
 
                 // get neighboring nodes
                 // to avoid duplicate objects, only allow creation of
-                // 1-2 springs at a time
+                // 1-2 new springs at a time
                 let neighbor1 = null;
                 if (nextNodeCol != null)
                     neighbor1 = nextNodeCol.getObjectAt(j);
@@ -92,7 +93,8 @@ class Mesh extends GameObjectSet{
 
                 //console.log("Spring 1: " + i + " , " + j);
                 if (neighbor1 != null) {
-                    var spring1 = new Spring(currNode, neighbor1, this.s, ren);
+                    var spring1 = new Spring(currNode, neighbor1, this.s, this.e, ren);
+                    spring1.init();
                     this.springArray.addToSet(spring1);
                 }
 
@@ -102,9 +104,11 @@ class Mesh extends GameObjectSet{
 
                 //console.log("Spring 2: " + i + " , " + j);
                 if (neighbor2 != null) {
-                    var spring2 = new Spring(currNode, neighbor2, this.s, ren);
+                    var spring2 = new Spring(currNode, neighbor2, this.s, this.e, ren);
+                    spring2.init();
                     this.springArray.addToSet(spring2);
                 }
+
             }
         }
 
@@ -114,7 +118,6 @@ class Mesh extends GameObjectSet{
             this.addToSet(this.springArray.getObjectAt(f));
         }
 
-        //console.log("# of springs: " + this.size());
     }
 
     generate() {
@@ -127,17 +130,35 @@ class Mesh extends GameObjectSet{
         this.generateSprings();
     }
 
-    update() {
-        // TODO: Create a more efficient storage system for nodes for efficient
-        //          traversal and neighbor assignments
+    togglePinNode(x, y) {
+        var nodeCol = this.mNodeArray.getObjectAt(x);
+        var node = nodeCol.getObjectAt(y);
+        node.setPin(!node.isPinned());
+    }
 
-        for (let i = 0; i < this.mSet.length; i++) {
-            this.getObjectAt(i).update;
+    getNodes() {
+        var nodes = [];
+        var pair;
+        for (let i = 0; i < this.size(); i++) {
+            pair = [2];
+            var spring = this.getObjectAt(i);
+            pair[0] = spring.getNode1();
+            pair[1] = spring.getNode2();
+            nodes[i] = pair;
         }
 
-        this.mTime = performance.now();
-        //console.log(this.mTime - this.mPrevTime);
-        this.mPrevTime = this.mTime;
+        return nodes;
+    }
+
+    addCollision(gameObj) {
+        this.collidables.push(gameObj);
+    }
+
+    update() {
+
+        for (let i = 0; i < this.mSet.length; i++) {
+            this.getObjectAt(i).update();
+        }
     }
 
 }
