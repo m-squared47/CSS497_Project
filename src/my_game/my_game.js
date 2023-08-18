@@ -61,6 +61,14 @@ class StartScene extends engine.Scene {
         if (engine.input.isKeyClicked(engine.input.keys.A)) {
             this.next();
         }
+        if (engine.input.isKeyClicked(engine.input.keys.Space)) {
+            for (let i = 0; i < 25; i++) {
+                for (let j = 0; j < 25; j++) {
+                    if ((i != 0 && j != 0) || (i != 24 && j != 24))
+                        this.mMesh.togglePinNode(i, j);
+                }
+            }
+        }
 
         this.mMesh.update();
     }
